@@ -1,5 +1,8 @@
 import requests
 import sys
+import getpass
+
+path = "https://tictactoe-dlgy.onrender.com/"
 
 def index():
     print(" What do you want? ")
@@ -26,15 +29,13 @@ def index():
 
 def signup():
     print("\n")
-    print("Enter your username: ")
-    username = input()
-    print("Enter your password: ")
-    password = input()
+    username = input("Enter your username: ")
+    password = getpass.getpass("Enter your password: ")
     if username == '' or password == '':
         print("\n")
         print("Please enter a valid username or password.")
         signup()
-    r = requests.post(url = 'http://localhost:8000/api/user/', data = {"username": username, "password": password})
+    r = requests.post(url = path+'api/user/', data = {"username": username, "password": password})
     if r.status_code == 400:
         print("\n")
         print(r.json())
@@ -45,11 +46,10 @@ def signup():
     index()
 
 def login():
-    print("Enter your username: ")
-    username = input()
-    print("Enter your password: ")
-    password = input()
-    r = requests.patch(f'http://localhost:8000/api/user/login/', data = {"username":username, "password":password})
+    print("\n")
+    username = input("Enter your username: ")
+    password = getpass.getpass("Enter your password: ")
+    r = requests.patch(path+'api/user/login/', data = {"username":username, "password":password})
     if r.status_code == 400:
         print("\n")
         print(r.json())
@@ -59,7 +59,7 @@ def login():
     user_stage(username)
 
 def user_stage(username):
-    users = requests.get("http://localhost:8000/api/user/").json()
+    users = requests.get(f"{path}api/user/").json()
     for user in users:
         if user['username'] == username:
             idUser = user['id']
@@ -78,7 +78,7 @@ def user_stage(username):
     
     if n=="1":
         print("\n")
-        user = requests.get(f"http://localhost:8000/api/user/{idUser}/").json()
+        user = requests.get(f"{path}api/user/{idUser}/").json()
         print(f"Your stats are: {user['won_games']} wins, {user['lost_games']} losses, {user['tied_games']} ties.")
         print("\n")
         user_stage(username)
@@ -97,7 +97,7 @@ def user_stage(username):
 
 def create_game(idUser, username):
     print("\n")
-    r = requests.post('http://localhost:8000/api/game/', data = {'id_player1': idUser})
+    r = requests.post(f'{path}api/game/', data = {'id_player1': idUser})
     if r.status_code == 400:
         print(r.json())
         print("\n")
@@ -117,7 +117,7 @@ def join_game(idUser, username):
         print("Please enter a valid Game ID.")
         join_game(idUser, username)
     idGame = int(idGame)
-    r = requests.put(f'http://localhost:8000/api/game/{idGame}/user/', data = {'id_player2': idUser})
+    r = requests.put(f'{path}api/game/{idGame}/user/', data = {'id_player2': idUser})
     if r.status_code == 400:
         print("\n")
         print(r.json())
@@ -137,7 +137,7 @@ def start_game(idUser, username):
         print("Please enter a valid Game ID.")
         start_game(idUser, username)
     idGame = int(idGame)
-    r = requests.get(f'http://localhost:8000/api/game/{idGame}/')
+    r = requests.get(f'{path}api/game/{idGame}/')
     if r.status_code == 400:
         print(r.json())
         print("\n")
@@ -178,7 +178,7 @@ def move_to_board(move, board, player):
 def game_stage(idGame, idUser, username):
     print("Player 1 -> O")
     print("Player 2 -> X")
-    game = requests.get(f"http://localhost:8000/api/game/{idGame}/")
+    game = requests.get(f"{path}api/game/{idGame}/")
     if idUser == game.json()['id_player1']:
         print("You are Player 1")
         who_i_am = 1
@@ -197,7 +197,7 @@ def game_stage(idGame, idUser, username):
                 print("\n")
                 game_stage(idGame, idUser, username)
             new_board = move_to_board(n, game.json()['board'], who_i_am)
-            r = requests.patch(f'http://localhost:8000/api/game/{idGame}/move/', data={"id_player":idUser, "board":new_board})
+            r = requests.patch(f'{path}api/game/{idGame}/move/', data={"id_player":idUser, "board":new_board})
             if r.status_code == 400:
                 print("\n")
                 print(r.json())
