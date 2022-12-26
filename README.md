@@ -7,7 +7,7 @@ If you want to deploy the app on localhost, then:
 
 Install the dependencies.
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 Then, run the server.
 ```
